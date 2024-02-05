@@ -1,1 +1,1 @@
-# Generative-AI-for-Interactive-Data-Visualization
+# Generative AI for Interactive Data Visualization
