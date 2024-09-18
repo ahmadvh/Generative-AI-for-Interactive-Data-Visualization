@@ -7,8 +7,6 @@ class State:
         self.code = code_object
         self.error = False
         self.model = llm_model
-        
-
 
     def generate_code(self):
         template = """
@@ -54,8 +52,7 @@ class State:
                              """
             self.code.context = context + new_context
             self.error = True
-            # self.write_logs(f"{e}")
-            
+
 
 
         try:
@@ -71,10 +68,8 @@ class State:
                              """
             self.code.context = context + new_context
             self.error = True
-            # self.write_logs(f"{e}")
-
-        self.error = False
         
+        self.error = False
         print("CODE IS EXECUTED WITH NO ERROR!")
         
     def run(self):

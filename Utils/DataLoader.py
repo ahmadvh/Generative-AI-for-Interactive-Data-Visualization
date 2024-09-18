@@ -7,5 +7,5 @@ def load_data(file_path):
 
 def calculate_product_profit(df, price_col, cost_col, items_sold_col):
     df['Product_Profit'] = (df[price_col] - df[cost_col]) * df[items_sold_col]
-    return df.reset_index()
+    return df
 
