@@ -1,7 +1,9 @@
 import pandas as pd 
-
+import streamlit as st
+ 
+@st.cache_data
 def load_data(file_path):
-    product_sales_data = pd.read_csv("product_sales_dataset.csv")
+    product_sales_data = pd.read_csv(file_path)
     product_sales_data = calculate_product_profit(product_sales_data, 'Product_Price', 'Product_Cost','Items_Sold')
     return product_sales_data
 

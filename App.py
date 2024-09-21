@@ -3,7 +3,19 @@ from langchain_openai import ChatOpenAI
 import Utils.DataLoader as DataLoader 
 from Utils.Code import Code
 from Utils.State import State
- 
+import matplotlib.pyplot as plt
+plt.switch_backend('TkAgg')
+import warnings
+from pydantic.json_schema import PydanticJsonSchemaWarning
+
+# Suppress the specific PydanticJsonSchemaWarning warnings
+warnings.filterwarnings("ignore", category=PydanticJsonSchemaWarning)
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+state = None
+data = None 
+
 # Import the API key (The key name must be: `OPENAI_API_KEY`)
 load_dotenv(dotenv_path='apikey.env')
 
@@ -14,7 +26,7 @@ data = DataLoader.load_data("product_sales_dataset.csv")
 
 # Define base code
 init_code = Code(
-    context="""
+    description="""
         We have a product sales dataset. Here's a description of the columns in this dataframe:
         Date: The date on which the sales data for the products was recorded, formatted as YYYY-MM-DD.
         Product_Category: The category to which the product belongs. This could include various categories like "Art & Crafts" or others.
@@ -33,51 +45,29 @@ init_code = Code(
     """.strip(),
 )
 
+states = []
+
 while True:
-    user_prompt = input("What do you want?")
+    user_input = input("Enter prompt:")
 
     state = State(
-        init_code,
-        model,
-        user_prompt
+        code_object = init_code,
+        user_prompt = user_input,
+        llm_model = model,
+        data_sample= data.head(3)
     )
-
-    state.run()
-
-    print(
-        state.code.context  
-    )
-    init_code = state.code
-    exec(state.code.imports, globals())
-    exec(state.code.code, globals())
-
+    
+    init_code = state.run()
+    
+    code_str = init_code.imports.strip() + '\n' + init_code.code.strip()
+    exec(code_str, globals())
+    
     fig = generated_method(data)
-    fig.savefig("Outputs/output.png") 
- 
+    
+    fig.savefig("output_figure.png")
+    # plt.close('all') 
+    fig.show()
 
-
-
-
-
-
-# 
-# # Create the state object and execute the code generation
-# state = State(
-#     session_code,
-#     model,
-#     user_prompt
-# )
-
-# state.run()
-
-# # Update the base_code with the new code
-# base_code = state.code
-
-# # Execute the imports and generated code
-# exec(state.code.imports, globals())
-# exec(state.code.code, globals())
-
-# # Generate the figure and save it
-# fig = generated_method(data)
-# fig.savefig("Outputs/output.png")
-# st.image("Outputs/output.png")
+    states.append(state)
+    
+    
